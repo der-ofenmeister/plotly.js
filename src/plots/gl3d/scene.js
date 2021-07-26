@@ -125,47 +125,14 @@ proto.prepareOptions = function() {
     return opts;
 };
 
-var firstInit = true;
-
 proto.tryCreatePlot = function() {
     var scene = this;
 
     var opts = scene.prepareOptions();
 
-    var success = true;
+    scene.glplot = createPlot(opts);
 
-    try {
-        scene.glplot = createPlot(opts);
-    } catch(e) {
-        if(scene.staticMode || !firstInit || preserveDrawingBuffer) {
-            success = false;
-        } else { // try second time
-            // enable preserveDrawingBuffer setup
-            // in case is-mobile not detecting the right device
-            Lib.warn([
-                'webgl setup failed possibly due to',
-                'false preserveDrawingBuffer config.',
-                'The mobile/tablet device may not be detected by is-mobile module.',
-                'Enabling preserveDrawingBuffer in second attempt to create webgl scene...'
-            ].join(' '));
-
-            try {
-                // invert preserveDrawingBuffer
-                preserveDrawingBuffer = opts.glOptions.preserveDrawingBuffer = true;
-
-                scene.glplot = createPlot(opts);
-            } catch(e) {
-                // revert changes to preserveDrawingBuffer
-                preserveDrawingBuffer = opts.glOptions.preserveDrawingBuffer = false;
-
-                success = false;
-            }
-        }
-    }
-
-    firstInit = false;
-
-    return success;
+    return true;
 };
 
 proto.initializeGLCamera = function() {
